@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Road Racer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="start-screen" style="display: flex;">
+        <div>
+            <div class="logo-container">
+                <img src="road_racer_logo.png" alt="Road Racer Logo" class="logo">
+            </div>
+            <h1>Register</h1>
+            <form id="registerForm">
+                <input type="text" id="regUserId" placeholder="Nickname" required><br>
+                <input type="email" id="regEmail" placeholder="Email (optional)"><br>
+                <input type="password" id="regPassword" placeholder="Password" required><br>
+                <button type="submit" class="start-btn">Register</button>
+            </form>
+            <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('regUserId').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            const response = await fetch('api.php?action=register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, email, password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                window.location.href = `index.html?user_id=${encodeURIComponent(userId)}`;
+            } else {
+                alert(result.error || 'Registration failed');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Racer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="1000" height="800"></canvas>
+        <div class="ui" id="scoreDisplay">Score: 0</div>
+        <div class="ui" id="coinsDisplay">Coins: 0</div>
+        <div class="ui" id="distanceDisplay">Distance: 0 km</div>
+        <div class="speedometer" id="speedometer">Speed: 0 km/h</div>
+        <div class="controls">
+            <div id="highScoreDisplay">High Score: 0</div>
+            <button id="pauseBtn">Pause</button>
+            <button id="exitBtn">Exit</button>
+        </div>
+        <div class="coin-animation" id="coinAnimation"></div>
+    </div>
+    <div class="start-screen" id="startScreen">
+        <div>
+            <div class="logo-container">
+                <img src="road_racer_logo.png" class="logo">
+            </div>
+            <h1>Road Racer</h1>
+            <p id="startHighScoreDisplay">High Score: 0</p>
+            <p id="startCoinsDisplay">Coins: 0</p>
+            <p>Choose your car:</p>
+            <div class="car-selection" id="carSelection"></div>
+            <button class="start-btn" id="startBtn">Start Race</button>
+        </div>
+    </div>
+    <div class="game-over-screen" id="gameOverScreen">
+        <div>
+            <h1>Game Over</h1>
+            <p id="finalScore">Score: 0</p>
+            <p id="finalHighScore">High Score: 0</p>
+            <p id="finalCoins">Coins: 0</p>
+            <button class="revive-btn" id="reviveBtn">Revive for 5 Coins</button>
+            <button class="restart-btn" id="restartBtn">Restart</button>
+            <button class="exit-btn" id="gameOverExitBtn">Exit</button>
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+</body>
+</html>
