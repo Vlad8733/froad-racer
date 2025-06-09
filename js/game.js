@@ -158,7 +158,7 @@ const drawObstacle = obstacle => {
         ctx.save();
         ctx.translate(obstacle.x + carWidth / 2, y + carHeight / 2);
         if (obstacle.speed > 0) {
-            ctx.rotate(Math.PI); // Rotate 180 degrees if moving upward, since images face downward by default
+            ctx.rotate(Math.PI); // Rotate 180 degrees if moving upward
         }
         const obstacleImage = obstacle.image;
         if (obstacleImage.complete && obstacleImage.naturalHeight) {
@@ -417,15 +417,46 @@ const showStartScreen = () => {
         if (ownedCars.includes(car.name)) {
             div.style.cursor = 'pointer';
             div.onclick = (e) => {
-                if (e.target !== infoIcon) {
+                if (e.target !== infoIcon && !e.target.classList.contains('sell-btn')) {
                     player.carData = car;
                     carImage.src = car.texture;
                     saveGameState();
                     document.querySelectorAll('.car-option').forEach(opt => opt.style.border = '2px solid transparent');
                     div.style.border = '2px solid #ff00ff';
                     console.log(`Selected car: ${car.name}`);
+                    // Update sell buttons to disable for the selected car
+                    document.querySelectorAll('.car-option').forEach(opt => {
+                        const sellBtn = opt.querySelector('.sell-btn');
+                        if (sellBtn) {
+                            sellBtn.disabled = opt.style.border === '2px solid #ff00ff';
+                        }
+                    });
                 }
             };
+            if (car.cost > 0) { // Don't allow selling the free car
+                const sellButton = document.createElement('button');
+                const sellPrice = Math.floor(car.cost * 0.75); // Sell for 75% of original cost
+                sellButton.textContent = `Sell (${sellPrice} coins)`;
+                sellButton.className = 'sell-btn';
+                sellButton.disabled = player.carData.name === car.name; // Disable if this is the current car
+                sellButton.onclick = () => {
+                    coins = Math.min(coins + sellPrice, MAX_COINS);
+                    ownedCars = ownedCars.filter(name => name !== car.name);
+                    if (player.carData.name === car.name) {
+                        // Revert to default car if selling the current one
+                        player.carData = cars.find(c => c.name === 'Default Car');
+                        carImage.src = player.carData.texture;
+                    }
+                    saveGameState();
+                    document.getElementById('startCoinsDisplay').textContent = `Coins: ${coins}`;
+                    showStartScreen(); // Refresh the car selection UI
+                };
+                div.appendChild(sellButton);
+            } else {
+                const ownedP = document.createElement('p');
+                ownedP.textContent = '(Owned)';
+                div.appendChild(ownedP);
+            }
         } else {
             const buyButton = document.createElement('button');
             buyButton.textContent = `Buy (${car.cost} coins)`;
@@ -437,48 +468,7 @@ const showStartScreen = () => {
                     ownedCars.push(car.name);
                     saveGameState();
                     document.getElementById('startCoinsDisplay').textContent = `Coins: ${coins}`;
-                    div.innerHTML = '';
-                    div.appendChild(img);
-                    const ownedP = document.createElement('p');
-                    ownedP.textContent = car.name;
-                    div.appendChild(ownedP);
-                    const costPOwned = document.createElement('p');
-                    costPOwned.textContent = '(Owned)';
-                    div.appendChild(costPOwned);
-                    const infoIconNew = document.createElement('span');
-                    infoIconNew.textContent = 'ⓘ';
-                    infoIconNew.className = 'info-icon';
-                    infoIconNew.onclick = () => {
-                        const modal = document.createElement('div');
-                        modal.className = 'info-modal';
-                        modal.innerHTML = `
-                            <div class="info-content">
-                                <h2>${car.name}</h2>
-                                <p>Max Speed: ${car.maxSpeed}</p>
-                                <p>Acceleration: ${car.acceleration}</p>
-                                <p>Cost: ${car.cost} coins</p>
-                                <p>Coin Multiplier: ${car.coinMultiplier}</p>
-                                <button class="close-modal">Close</button>
-                            </div>
-                        `;
-                        document.body.appendChild(modal);
-                        modal.querySelector('.close-modal').onclick = () => {
-                            modal.remove();
-                        };
-                    };
-                    div.appendChild(infoIconNew);
-                    div.style.cursor = 'pointer';
-                    div.onclick = (e) => {
-                        if (e.target !== infoIconNew) {
-                            player.carData = car;
-                            carImage.src = car.texture;
-                            saveGameState();
-                            document.querySelectorAll('.car-option').forEach(opt => opt.style.border = '2px solid transparent');
-                            div.style.border = '2px solid #ff00ff';
-                            console.log(`Selected car: ${car.name}`);
-                        }
-                    };
-                    buyButton.remove();
+                    showStartScreen(); // Refresh the car selection UI
                 }
             };
             div.appendChild(buyButton);
